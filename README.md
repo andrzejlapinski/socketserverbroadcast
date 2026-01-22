@@ -111,5 +111,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Changelog
 
-### Version 0.4
+### Version 0.5
 - Initial packaged release

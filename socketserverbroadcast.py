@@ -120,7 +120,7 @@ BaseServer:
 
 # Author of the BaseServer patch: Luke Kenneth Casson Leighton
 
-__version__ = "0.4"
+__version__ = "0.5"
 
 
 import socket
@@ -191,6 +191,7 @@ class BaseServer:
     - socket_type
     - allow_reuse_address
     - allow_reuse_port
+    - allow_broadcast_mode
 
     Instance variables:
 
@@ -429,6 +430,7 @@ class TCPServer(BaseServer):
     - request_queue_size (only for stream sockets)
     - allow_reuse_address
     - allow_reuse_port
+    - allow_broadcast_mode
 
     Instance variables:
 
@@ -447,6 +449,8 @@ class TCPServer(BaseServer):
     allow_reuse_address = False
 
     allow_reuse_port = False
+
+    allow_broadcast_mode = False
 
     def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
         """Constructor.  May be extended, do not override."""
@@ -476,6 +480,10 @@ class TCPServer(BaseServer):
             and self.address_family in (socket.AF_INET, socket.AF_INET6)
         ):
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        # Enable broadcast mode if requested
+        if self.allow_broadcast_mode and hasattr(socket, "SO_BROADCAST"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
         self.socket.bind(self.server_address)
         self.server_address = self.socket.getsockname()
 
@@ -533,6 +541,8 @@ class UDPServer(TCPServer):
     allow_reuse_address = False
 
     allow_reuse_port = False
+
+    allow_broadcast_mode = False
 
     socket_type = socket.SOCK_DGRAM
 
